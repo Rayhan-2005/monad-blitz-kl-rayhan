@@ -67,6 +67,14 @@ export default function VerifyPage() {
   const { address, isConnected } = useAccount();
   const { connect } = useConnect();
 
+  // Demo leaderboard data
+  const leaderboardData = [
+    { rank: 1, address: "0x1234567890abcdef1234567890abcdef1234", count: 38, reputation: 1250, status: "Trusted" },
+    { rank: 2, address: "0x9876543210fedcba9876543210fedcba9876", count: 25, reputation: 870, status: "Trusted" },
+    { rank: 3, address: "0xabcdefabcdefabcdefabcdefabcdefabcdef", count: 18, reputation: 520, status: "Trusted" },
+    { rank: 4, address: address ?? "0x000000000000000000000000000000000000", count: 0, reputation: 0, status: "New" },
+  ];
+
   const [tokenId, setTokenId] = useState("");
   const [searchId, setSearchId] = useState<bigint | null>(null);
   const [stake, setStake] = useState("");
@@ -373,6 +381,68 @@ export default function VerifyPage() {
             No asset found for ID {searchId?.toString()}.
           </div>
         )}
+
+      {/* Verifier Leaderboard */}
+      <RevealOnScroll delay={0.15}>
+        <div className="max-w-2xl mx-auto px-6 py-10">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9.75 17L12 20.25 14.25 17m-4.5-13.5L12 3l4.5 4.5M18 20.4a9.001 9.001 0 11-12 0" />
+            </svg>
+            Verifier Leaderboard
+          </h2>
+
+          <div className="overflow-x-auto rounded-lg border border-gray-300">
+            <table className="w-full text-left text-sm text-gray-700">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-4 py-2">Rank</th>
+                  <th className="px-4 py-2">Address</th>
+                  <th className="px-4 py-2">Verified</th>
+                  <th className="px-4 py-2">Reputation</th>
+                  <th className="px-4 py-2">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {leaderboardData.map(({ rank, address, count, reputation, status }) => {
+                  const isTop3 = rank <= 3;
+                  const rankColors = ["gold", "silver", "#cd7f32"];
+                  return (
+                    <tr
+                      key={address}
+                      className="border-t border-gray-200 hover:bg-gray-100"
+                    >
+                      <td className={`px-4 py-2 font-bold ${isTop3 ? "text-yellow-600" : "text-gray-600"}`} style={{ color: isTop3 ? rankColors[rank - 1] : undefined }}>
+                        {rank}
+                      </td>
+                      <td className="px-4 py-2 font-mono">
+                        {address.slice(0, 6) + "…" + address.slice(-4)}
+                      </td>
+                      <td className="px-4 py-2">
+                        {count}
+                      </td>
+                      <td className="px-4 py-2">
+                        {reputation}
+                      </td>
+                      <td className="px-4 py-2">
+                        <span
+                          className={`inline-block px-2 py-1 text-xs rounded-full font-semibold whitespace-nowrap ${
+                            status === "Trusted"
+                              ? "bg-emerald-100 text-emerald-700"
+                              : "bg-gray-200 text-gray-600"
+                          }`}
+                        >
+                          {status}
+                        </span>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </RevealOnScroll>
     </div>
   );
 }

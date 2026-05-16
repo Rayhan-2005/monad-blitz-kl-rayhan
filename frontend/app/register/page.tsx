@@ -8,6 +8,7 @@ import {
 } from "wagmi";
 import { injected } from "wagmi/connectors";
 import { useRouter } from "next/navigation";
+import { FilePlus2, Tag, Building2, Hash, Coins } from "lucide-react";
 import { CONTRACT_ADDRESS, CONTRACT_ABI } from "@/lib/contract";
 import { monadTestnet } from "@/lib/wagmi";
 import { parseEther } from "viem";
@@ -43,7 +44,7 @@ function BlueSpinner({ className = "w-4 h-4" }: { className?: string }) {
 function AnimatedCheck() {
   return (
     <svg
-      className="w-6 h-6"
+      className="w-7 h-7"
       viewBox="0 0 24 24"
       fill="none"
       stroke="#059669"
@@ -107,9 +108,12 @@ export default function RegisterPage() {
   return (
     <div className="max-w-xl mx-auto px-6 pt-28 pb-16">
       <RevealOnScroll>
-        <h1 className="text-3xl font-semibold text-gray-900 mb-2 tracking-card-title">
-          Register an Asset
-        </h1>
+        <div className="flex items-center gap-2.5 mb-2">
+          <FilePlus2 className="w-6 h-6 text-blue-600" strokeWidth={1.75} />
+          <h1 className="text-3xl font-bold text-gray-900 tracking-card-title">
+            Register an Asset
+          </h1>
+        </div>
         <p className="text-sm text-gray-600 mb-8">
           Create a permanent on-chain record for your item.
         </p>
@@ -123,17 +127,17 @@ export default function RegisterPage() {
             </p>
             <button
               onClick={() => connect({ connector: injected() })}
-              className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg px-5 py-2.5 font-medium text-sm transition-colors"
+              className="btn-shine bg-blue-600 hover:bg-blue-700 text-white rounded-lg px-5 py-2.5 font-medium text-sm transition-colors"
             >
               Connect Wallet
             </button>
           </div>
         ) : success ? (
           <div className="card-soft p-8 text-center">
-            <div className="w-12 h-12 mx-auto mb-4 rounded-full bg-green-50 border border-green-200 flex items-center justify-center">
+            <div className="w-14 h-14 mx-auto mb-4 rounded-full bg-emerald-50 border border-emerald-200 flex items-center justify-center">
               <AnimatedCheck />
             </div>
-            <h2 className="text-xl font-semibold text-gray-900 mb-2 tracking-card-title">
+            <h2 className="text-xl font-bold text-gray-900 mb-2 tracking-card-title">
               Asset registered
             </h2>
             <p className="text-sm text-gray-600 mb-6">
@@ -142,7 +146,7 @@ export default function RegisterPage() {
             <div className="flex flex-col sm:flex-row gap-2 justify-center">
               <button
                 onClick={() => router.push("/assets")}
-                className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg px-4 py-2.5 font-medium text-sm transition-colors"
+                className="btn-shine bg-blue-600 hover:bg-blue-700 text-white rounded-lg px-4 py-2.5 font-medium text-sm transition-colors"
               >
                 View Assets
               </button>
@@ -157,7 +161,7 @@ export default function RegisterPage() {
                     estimatedValue: "",
                   });
                 }}
-                className="border border-black/[0.06] hover:border-blue-600/30 bg-white text-gray-700 rounded-lg px-4 py-2.5 font-medium text-sm transition-colors"
+                className="border border-black/[0.06] hover:border-blue-300 bg-white text-gray-700 rounded-lg px-4 py-2.5 font-medium text-sm transition-colors"
               >
                 Register Another
               </button>
@@ -166,7 +170,7 @@ export default function RegisterPage() {
         ) : (
           <div className="card-soft p-6 space-y-5">
             <div>
-              <label className="text-xs uppercase tracking-label text-gray-400 mb-2 block">
+              <label className="text-xs font-semibold tracking-widest uppercase text-gray-400 mb-2 block">
                 Category
               </label>
               <div className="flex gap-2 flex-wrap">
@@ -174,10 +178,10 @@ export default function RegisterPage() {
                   <button
                     key={type}
                     onClick={() => setForm({ ...form, assetType: type })}
-                    className={`chip-hover px-3 py-1.5 rounded-md text-sm font-medium ${
+                    className={`chip-hover px-3.5 py-2 rounded-lg text-sm font-semibold ${
                       form.assetType === type
-                        ? "bg-blue-600 text-white"
-                        : "border border-black/[0.06] bg-white text-gray-700 hover:border-blue-600/30"
+                        ? "bg-blue-600 text-white shadow-md shadow-blue-500/30"
+                        : "border-2 border-gray-200 bg-white text-gray-700 hover:border-blue-300 hover:bg-blue-50"
                     }`}
                   >
                     {type}
@@ -187,7 +191,8 @@ export default function RegisterPage() {
             </div>
 
             <div>
-              <label className="text-xs uppercase tracking-label text-gray-400 mb-2 block">
+              <label className="flex items-center gap-2 text-xs font-semibold tracking-widest uppercase text-gray-400 mb-2">
+                <Tag className="w-3.5 h-3.5" strokeWidth={2} />
                 Item Name
               </label>
               <input
@@ -199,7 +204,8 @@ export default function RegisterPage() {
             </div>
 
             <div>
-              <label className="text-xs uppercase tracking-label text-gray-400 mb-2 block">
+              <label className="flex items-center gap-2 text-xs font-semibold tracking-widest uppercase text-gray-400 mb-2">
+                <Building2 className="w-3.5 h-3.5" strokeWidth={2} />
                 Brand
               </label>
               <input
@@ -211,7 +217,8 @@ export default function RegisterPage() {
             </div>
 
             <div>
-              <label className="text-xs uppercase tracking-label text-gray-400 mb-2 block">
+              <label className="flex items-center gap-2 text-xs font-semibold tracking-widest uppercase text-gray-400 mb-2">
+                <Hash className="w-3.5 h-3.5" strokeWidth={2} />
                 Serial Number
               </label>
               <input
@@ -225,7 +232,8 @@ export default function RegisterPage() {
             </div>
 
             <div>
-              <label className="text-xs uppercase tracking-label text-gray-400 mb-2 block">
+              <label className="flex items-center gap-2 text-xs font-semibold tracking-widest uppercase text-gray-400 mb-2">
+                <Coins className="w-3.5 h-3.5" strokeWidth={2} />
                 Estimated Value (MON)
               </label>
               <input
@@ -248,7 +256,7 @@ export default function RegisterPage() {
             <button
               onClick={handleSubmit}
               disabled={isPending}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-lg px-4 py-2.5 font-medium text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="btn-shine w-full bg-blue-600 hover:bg-blue-700 text-white rounded-lg px-4 py-3 font-semibold text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20"
             >
               {isPending && <BlueSpinner className="w-4 h-4 text-white" />}
               {isPending ? "Registering…" : "Register Asset"}

@@ -3,23 +3,39 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAccount, useConnect } from "wagmi";
 import { injected } from "wagmi/connectors";
-import MeshGradientHero from "@/components/MeshGradientHero";
+import { FileCheck, ShieldCheck, Eye } from "lucide-react";
+import FloatingProducts from "@/components/FloatingProducts";
+import Particles from "@/components/Particles";
 import MagneticButton from "@/components/MagneticButton";
-import TiltCard from "@/components/TiltCard";
 import RevealOnScroll from "@/components/RevealOnScroll";
+import StatsBar from "@/components/StatsBar";
+import HowItWorks from "@/components/HowItWorks";
+import Footer from "@/components/Footer";
 
 const FEATURES = [
   {
     title: "Register",
     body: "Anyone can create a permanent on-chain record for a real-world asset.",
+    icon: FileCheck,
+    iconColor: "text-blue-500",
+    iconBg: "bg-blue-50",
+    border: "border-t-blue-500",
   },
   {
     title: "Verify",
     body: "Experts stake MON to guarantee authenticity — their money is on the line.",
+    icon: ShieldCheck,
+    iconColor: "text-violet-500",
+    iconBg: "bg-violet-50",
+    border: "border-t-violet-500",
   },
   {
     title: "Trust",
     body: "Buyers see exactly how much MON is at stake behind every claim.",
+    icon: Eye,
+    iconColor: "text-emerald-500",
+    iconBg: "bg-emerald-50",
+    border: "border-t-emerald-500",
   },
 ];
 
@@ -38,34 +54,42 @@ export default function Home() {
 
   return (
     <>
-      <section className="relative pt-32 pb-20 px-6 overflow-hidden">
-        <MeshGradientHero />
+      {/* Hero — dark navy gradient */}
+      <section className="hero-bg relative pt-28 pb-20 px-6 overflow-hidden bg-gradient-to-br from-[#0F172A] via-[#1E1B4B] to-[#0F172A]">
+        <Particles count={20} />
+        <FloatingProducts />
 
-        <div className="relative z-10 max-w-3xl mx-auto text-center">
+        <div className="relative z-10 max-w-4xl mx-auto text-center">
           <RevealOnScroll>
-            <h1 className="hero-headline font-semibold text-gray-900 mb-6">
-              Verify what&apos;s real.
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs font-semibold tracking-widest uppercase text-blue-400 mb-8">
+              <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
+              Built on Monad
+            </div>
+          </RevealOnScroll>
+
+          <RevealOnScroll delay={0.05}>
+            <h1 className="text-6xl md:text-8xl font-black tracking-tighter text-white mb-6 leading-none">
+              Verify what&apos;s <em className="text-blue-400 not-italic italic">real.</em>
             </h1>
           </RevealOnScroll>
 
-          <RevealOnScroll delay={0.1}>
-            <p className="text-lg text-gray-600 mb-10 max-w-xl mx-auto leading-relaxed">
-              The open provenance layer for luxury resale. Anyone can register,
-              verify, and trust.
+          <RevealOnScroll delay={0.12}>
+            <p className="text-lg md:text-xl text-blue-200 mb-12 max-w-3xl mx-auto leading-relaxed">
+              The open provenance layer for luxury resale. Anyone can register, verify, and trust.
             </p>
           </RevealOnScroll>
 
           <RevealOnScroll delay={0.2}>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
               <MagneticButton
                 onClick={handlePrimary}
-                className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg px-5 py-2.5 font-medium text-sm transition-colors w-full sm:w-auto"
+                className="btn-shine bg-blue-500 hover:bg-blue-400 text-white rounded-lg px-8 py-4 font-semibold text-base transition-colors w-full sm:w-auto shadow-lg shadow-blue-500/20"
               >
                 {isConnected ? "Register an Asset" : "Connect to Begin"}
               </MagneticButton>
               <Link
                 href="/assets"
-                className="border border-black/[0.06] hover:border-blue-600/30 bg-white text-gray-700 rounded-lg px-5 py-2.5 font-medium text-sm transition-colors w-full sm:w-auto text-center"
+                className="border border-white/20 text-white hover:bg-white/10 rounded-lg px-8 py-4 font-semibold text-base transition-colors w-full sm:w-auto text-center"
               >
                 Look up an Asset
               </Link>
@@ -74,28 +98,54 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="max-w-5xl mx-auto px-6 pb-24">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {FEATURES.map((f, i) => (
-            <RevealOnScroll key={f.title} delay={i * 0.1}>
-              <TiltCard className="card-feature p-6 h-full">
-                <h3 className="text-base font-semibold text-gray-900 mb-2 tracking-card-title">
-                  {f.title}
-                </h3>
-                <p className="text-sm text-gray-600 leading-relaxed">
-                  {f.body}
-                </p>
-              </TiltCard>
-            </RevealOnScroll>
-          ))}
+      <StatsBar />
+
+      <HowItWorks />
+      <HowItWorks />
+
+      {/* Feature cards */}
+      <section className="max-w-5xl mx-auto px-6 py-24">
+        <RevealOnScroll>
+          <div className="text-center mb-12">
+            <div className="text-xs font-semibold tracking-widest uppercase text-blue-600 mb-3">
+              Three roles
+            </div>
+            <h2 className="text-3xl font-bold text-gray-900 tracking-tight">
+              Designed for everyone in the chain of custody
+            </h2>
+          </div>
+        </RevealOnScroll>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {FEATURES.map((f, i) => {
+            const Icon = f.icon;
+            return (
+              <RevealOnScroll key={f.title} delay={i * 0.08}>
+                <div
+                  className={`group card-feature border-t-2 ${f.border} p-8 rounded-xl bg-[#FAFBFF] shadow-sm hover:shadow-lg hover:shadow-blue-500/10 transition-transform transform hover:-translate-y-1`}
+                >
+                  <div
+                    className={`w-16 h-16 rounded-xl ${f.iconBg} flex items-center justify-center mb-6 transition-transform duration-300 group-hover:scale-110`}
+                  >
+                    <Icon
+                      className={`w-8 h-8 ${f.iconColor}`}
+                      strokeWidth={1.75}
+                    />
+                  </div>
+                  <h3 className="text-lg font-bold text-gray-900 mb-2 tracking-card-title">
+                    {f.title}
+                  </h3>
+                  <p className="text-sm text-gray-600 leading-relaxed">
+                    {f.body}
+                  </p>
+                </div>
+              </RevealOnScroll>
+            );
+          })}
         </div>
       </section>
 
-      <footer className="border-t border-black/[0.06]">
-        <div className="max-w-6xl mx-auto px-6 py-6 text-xs text-gray-400 text-center tracking-label uppercase">
-          Built on Monad Testnet
-        </div>
-      </footer>
+      <Footer />
     </>
   );
 }

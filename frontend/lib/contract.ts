@@ -116,4 +116,11 @@ export const CONTRACT_ABI = [
     inputs: [{ name: "verifier", type: "address" }],
     outputs: [{ name: "score", type: "uint256" }],
   },
+  {
+    type: "function",
+    name: "getTotalAssets",
+    stateMutability: "view",
+    inputs: [],
+    outputs: [{ name: "total", type: "uint256" }],
+  },
 ] as const;

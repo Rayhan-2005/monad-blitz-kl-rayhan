@@ -10,6 +10,9 @@ import { CONTRACT_ADDRESS, CONTRACT_ABI } from "@/lib/contract";
 import { monadTestnet } from "@/lib/wagmi";
 import { formatEther, parseEther } from "viem";
 import RevealOnScroll from "@/components/RevealOnScroll";
+import VerifiedBadge from "@/components/VerifiedBadge";
+import UnverifiedBadge from "@/components/UnverifiedBadge";
+import { FileCheck, ShieldCheck, AlertTriangle, ArrowRightLeft, Plus, ShieldCheck as ShieldCheckIcon } from "lucide-react";
 
 type PendingAction = "request" | "verify" | "dispute" | null;
 type WriteFunctionName = "requestVerification" | "verifyAsset" | "openDispute";
@@ -211,10 +214,27 @@ export default function AssetsPage() {
 
   const hasBeenTransferred = historyData.some((e) => e.eventType === "SOLD");
 
+  // For recent assets 0..3
+  const recentIds = [0n, 1n, 2n, 3n];
+  const recentAssetsData = recentIds.map((id) => {
+    return {
+      id,
+      data: id === searchId ? assetData : undefined, // current loaded asset
+      verified: isVerified,
+    };
+  });
+
+  // Helpers
+  const onRecentClick = (id: bigint) => {
+    setSearchId(id);
+    setTokenId(id.toString());
+  };
+
   return (
-    <div className="max-w-2xl mx-auto px-6 pt-28 pb-16">
+    <div className="max-w-5xl mx-auto px-6 pt-28 pb-16">
       <RevealOnScroll>
-        <h1 className="text-3xl font-semibold text-gray-900 mb-2 tracking-card-title">
+        <h1 className="text-3xl font-semibold text-gray-900 mb-2 tracking-card-title flex items-center gap-2">
+          <ShieldCheckIcon className="w-5 h-5 text-violet-500" />
           Asset Lookup
         </h1>
         <p className="text-sm text-gray-600 mb-8">
@@ -243,6 +263,43 @@ export default function AssetsPage() {
             </button>
           </div>
         </div>
+
+        {/* Recent assets */}
+        <div className="mb-10">
+          <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+            <FileCheck className="w-5 h-5 text-blue-500" /> Recent Assets
+          </h2>
+          <div className="flex gap-4 overflow-x-auto pb-2">
+            {recentIds.map((id) => {
+              const isActive = searchId === id;
+              const card = isActive ? assetData : undefined;
+              if (!card) return null;
+              const verified = isActive ? isVerified : false;
+              return (
+                <button
+                  key={id.toString()}
+                  onClick={() => onRecentClick(id)}
+                  className={`flex flex-col bg-[#FAFBFF] rounded-lg shadow-sm p-5 text-left border-4 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                    verified ? "border-blue-500" : "border-gray-300"
+                  }`}
+                >
+                  <span className="uppercase text-xs font-semibold tracking-widest text-gray-600 mb-1">
+                    {card.assetType || "N/A"}
+                  </span>
+                  <h3 className="text-lg font-bold text-gray-900 mb-1 truncate max-w-[180px]">
+                    {card.name}
+                  </h3>
+                  <span className="text-sm text-gray-600 mb-2 truncate max-w-[180px]">
+                    {card.brand}
+                  </span>
+                  <div className="flex items-center gap-2">
+                    {verified ? <VerifiedBadge stake={safeFormatEther(stakedAmount)} /> : <UnverifiedBadge />}
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
       </RevealOnScroll>
 
       {isLoading && (
@@ -254,6 +311,82 @@ export default function AssetsPage() {
 
       {assetData && !isLoading && (
         <div className="space-y-4">
+      {/* User Journey Panels */}
+      <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* Seller actions panel */}
+        <div className="bg-[#FAFBFF] border border-blue-300 p-6 rounded-lg shadow-md">
+          <div className="flex items-center gap-2 mb-3 text-blue-600 font-bold text-lg tracking-card-title">
+            <FileCheck className="w-6 h-6" />
+            Request Verification
+          </div>
+          <p className="mb-4 text-sm text-gray-700">
+            Post a bounty to attract verifiers
+          </p>
+          <input
+            type="number"
+            value={bounty}
+            onChange={(e) => setBounty(e.target.value)}
+            placeholder="Bounty amount in MON"
+            className="input-line px-3 py-2 mb-3 text-sm font-mono text-gray-900 w-full"
+          />
+          <button
+            onClick={handleRequestVerification}
+            disabled={pendingAction !== null}
+            className="btn-shine bg-blue-600 hover:bg-blue-700 text-white rounded-lg px-4 py-2 font-medium text-sm transition-colors w-full"
+          >
+            {pendingAction === "request" ? "Requesting…" : "Post Bounty"}
+          </button>
+        </div>
+
+        {/* Verifier actions panel */}
+        <div className="bg-[#FAFBFF] border border-violet-500 p-6 rounded-lg shadow-md">
+          <div className="flex items-center gap-2 mb-3 text-violet-600 font-bold text-lg tracking-card-title">
+            <ShieldCheck className="w-6 h-6" />
+            Stake & Verify
+          </div>
+          <p className="mb-4 text-sm text-gray-700">
+            Put your reputation on the line
+          </p>
+          <input
+            type="number"
+            value={stake}
+            onChange={(e) => setStake(e.target.value)}
+            placeholder="Stake amount in MON"
+            className="input-line px-3 py-2 mb-3 text-sm font-mono text-gray-900 w-full"
+          />
+          <button
+            onClick={handleVerify}
+            disabled={pendingAction !== null}
+            className="btn-shine bg-violet-600 hover:bg-violet-700 text-white rounded-lg px-4 py-2 font-medium text-sm transition-colors w-full"
+          >
+            {pendingAction === "verify" ? "Staking…" : "Stake & Verify"}
+          </button>
+          <small className="block mt-2 text-xs text-gray-500">
+            Your stake is locked until the dispute window closes
+          </small>
+        </div>
+
+        {/* Buyer actions panel */}
+        <div className="bg-[#FAFBFF] border border-amber-300 p-6 rounded-lg shadow-md">
+          <div className="flex items-center gap-2 mb-3 text-amber-700 font-bold text-lg tracking-card-title">
+            <AlertTriangle className="w-6 h-6" />
+            Open Dispute
+          </div>
+          <p className="mb-2 text-sm text-gray-700">
+            Received a fake item? Open a dispute.
+          </p>
+          <p className="mb-3 text-xs text-red-600">
+            Requires 0.1 MON deposit. Only use if the item is not authentic.
+          </p>
+          <button
+            onClick={handleDispute}
+            disabled={pendingAction !== null}
+            className="btn-shine border border-red-500 text-red-600 rounded-lg px-4 py-2 font-medium text-sm transition-colors w-full"
+          >
+            {pendingAction === "dispute" ? "Opening…" : "Open Dispute"}
+          </button>
+        </div>
+      </div>
           <RevealOnScroll>
             <div className="card-soft p-6">
               <div className="flex items-start justify-between mb-5 gap-4">
