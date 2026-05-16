@@ -1,6 +1,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { loadEnvFile } from "node:process";
 
+<<<<<<< Updated upstream
 import hardhatToolboxViemPlugin from "@nomicfoundation/hardhat-toolbox-viem";
 import { defineConfig } from "hardhat/config";
 
@@ -45,6 +46,16 @@ export default defineConfig({
           },
         },
       },
+=======
+const config: HardhatUserConfig = {
+  solidity: "0.8.28",
+  networks: {
+    monad: {
+      type: "http",
+      url: "https://testnet-rpc.monad.xyz",
+      chainId: 10143,
+      accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
+>>>>>>> Stashed changes
     },
   },
   networks: {
