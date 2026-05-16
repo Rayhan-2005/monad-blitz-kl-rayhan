@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/lib/providers";
 import Navbar from "@/components/Navbar";
+import CursorSpotlight from "@/components/CursorSpotlight";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -22,10 +23,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${inter.variable} min-h-screen bg-[#FAFAFA] text-gray-900 antialiased`}>
+      <body
+        className={`${inter.variable} min-h-screen bg-[#FAFAFA] text-gray-900 antialiased`}
+      >
         <Providers>
+          <CursorSpotlight />
           <Navbar />
-          <main className="pt-16">{children}</main>
+          <main>{children}</main>
         </Providers>
       </body>
     </html>

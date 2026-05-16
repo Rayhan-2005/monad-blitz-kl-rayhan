@@ -11,6 +11,7 @@ import { injected } from "wagmi/connectors";
 import { CONTRACT_ADDRESS, CONTRACT_ABI } from "@/lib/contract";
 import { monadTestnet } from "@/lib/wagmi";
 import { formatEther, parseEther } from "viem";
+import RevealOnScroll from "@/components/RevealOnScroll";
 
 type ContractTuple = Record<string, unknown> & {
   [index: number]: unknown;
@@ -45,6 +46,21 @@ function errorMessage(error: unknown) {
     );
   }
   return "Transaction failed.";
+}
+
+function BlueSpinner({ className = "w-4 h-4" }: { className?: string }) {
+  return (
+    <svg
+      className={`animate-spin ${className}`}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+    >
+      <circle cx="12" cy="12" r="10" opacity="0.2" />
+      <path d="M22 12a10 10 0 0 1-10 10" strokeLinecap="round" />
+    </svg>
+  );
 }
 
 export default function VerifyPage() {
@@ -163,55 +179,62 @@ export default function VerifyPage() {
         : 0;
 
   return (
-    <div className="max-w-2xl mx-auto px-6 py-12 animate-fade-in">
-      <h1 className="text-3xl font-semibold text-gray-900 mb-2">
-        Verify an Asset
-      </h1>
-      <p className="text-sm text-gray-600 mb-8">
-        Stake MON to vouch for authenticity. Earn the bounty if you&apos;re
-        right — lose your stake if you&apos;re not.
-      </p>
+    <div className="max-w-2xl mx-auto px-6 pt-28 pb-16">
+      <RevealOnScroll>
+        <h1 className="text-3xl font-semibold text-gray-900 mb-2 tracking-card-title">
+          Verify an Asset
+        </h1>
+        <p className="text-sm text-gray-600 mb-8">
+          Stake MON to vouch for authenticity. Earn the bounty if you&apos;re
+          right — lose your stake if you&apos;re not.
+        </p>
+      </RevealOnScroll>
 
-      <div className="bg-white rounded-xl border border-gray-200 p-5 mb-6 flex items-center justify-between gap-4">
-        <div>
-          <div className="text-xs uppercase tracking-wide text-gray-400 mb-1">
-            Your Reputation
+      <RevealOnScroll delay={0.05}>
+        <div className="card-soft p-5 mb-6 flex items-center justify-between gap-4">
+          <div>
+            <div className="text-xs uppercase tracking-label text-gray-400 mb-1">
+              Your Reputation
+            </div>
+            <div className="text-2xl font-semibold text-gray-900 tracking-card-title">
+              {repScore}
+            </div>
+            <div className="text-xs text-gray-500 mt-1">
+              {isConnected ? shorten(address) : "Connect wallet to view"}
+            </div>
           </div>
-          <div className="text-2xl font-semibold text-gray-900">
-            {repScore}
-          </div>
-          <div className="text-xs text-gray-500 mt-1">
-            {isConnected ? shorten(address) : "Connect wallet to view"}
+          <div className="text-right text-xs text-gray-500 max-w-[160px] hidden sm:block">
+            Verified assets with no disputes
           </div>
         </div>
-        <div className="text-right text-xs text-gray-500 max-w-[160px] hidden sm:block">
-          Verified assets with no disputes
-        </div>
-      </div>
+      </RevealOnScroll>
 
-      <div className="mb-6">
-        <label className="text-xs uppercase tracking-wide text-gray-400 mb-2 block">
-          Asset ID
-        </label>
-        <div className="flex gap-2">
-          <input
-            value={tokenId}
-            onChange={(e) => setTokenId(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-            placeholder="Enter asset ID"
-            className="flex-1 border border-gray-200 rounded-lg px-3 py-2.5 text-sm font-mono focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 outline-none bg-white text-gray-900 placeholder:text-gray-400 transition-colors"
-          />
-          <button
-            onClick={handleSearch}
-            className="border border-gray-200 hover:border-gray-300 bg-white text-gray-700 rounded-lg px-4 py-2.5 font-medium text-sm transition-colors"
-          >
-            Load
-          </button>
+      <RevealOnScroll delay={0.1}>
+        <div className="mb-6">
+          <label className="text-xs uppercase tracking-label text-gray-400 mb-2 block">
+            Asset ID
+          </label>
+          <div className="flex gap-2">
+            <input
+              value={tokenId}
+              onChange={(e) => setTokenId(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+              placeholder="Enter asset ID"
+              className="input-line flex-1 px-3 py-2.5 text-sm text-gray-900 font-mono"
+            />
+            <button
+              onClick={handleSearch}
+              className="border border-black/[0.06] hover:border-blue-600/30 bg-white text-gray-700 rounded-lg px-4 py-2.5 font-medium text-sm transition-colors"
+            >
+              Load
+            </button>
+          </div>
         </div>
-      </div>
+      </RevealOnScroll>
 
       {assetLoading && (
-        <div className="text-center py-8 text-sm text-gray-500">
+        <div className="flex items-center justify-center gap-2 py-8 text-sm text-gray-500">
+          <BlueSpinner className="w-4 h-4 text-blue-600" />
           Loading asset…
         </div>
       )}
@@ -227,127 +250,111 @@ export default function VerifyPage() {
 
       {assetData && !assetLoading && (
         <div className="space-y-4">
-          <div className="bg-white rounded-xl border border-gray-200 p-6">
-            <div className="flex items-start justify-between mb-5 gap-4">
-              <div>
-                <div className="text-xs uppercase tracking-wide text-gray-400 mb-1">
-                  {assetData.assetType} · #{searchId?.toString()}
-                </div>
-                <h2 className="text-xl font-semibold text-gray-900">
-                  {assetData.name}
-                </h2>
-                <p className="text-sm text-gray-600">{assetData.brand}</p>
-              </div>
-              {isVerified ? (
-                <span className="px-2.5 py-1 rounded-full bg-green-50 border border-green-200 text-green-700 text-xs font-medium whitespace-nowrap">
-                  Verified
-                </span>
-              ) : (
-                <span className="px-2.5 py-1 rounded-full bg-amber-50 border border-amber-200 text-amber-700 text-xs font-medium whitespace-nowrap">
-                  Awaiting verifier
-                </span>
-              )}
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-gray-200">
-              <div>
-                <div className="text-xs uppercase tracking-wide text-gray-400 mb-1">
-                  Bounty
-                </div>
-                <div className="text-sm font-mono text-gray-900">
-                  {safeFormatEther(bountyAmount)} MON
-                </div>
-              </div>
-              <div>
-                <div className="text-xs uppercase tracking-wide text-gray-400 mb-1">
-                  Original Owner
-                </div>
-                <div className="text-sm font-mono text-gray-900">
-                  {shorten(assetData.originalOwner)}
-                </div>
-              </div>
-              {isVerified && (
+          <RevealOnScroll>
+            <div className="card-soft p-6">
+              <div className="flex items-start justify-between mb-5 gap-4">
                 <div>
-                  <div className="text-xs uppercase tracking-wide text-gray-400 mb-1">
-                    Verifier Stake
+                  <div className="text-xs uppercase tracking-label text-gray-400 mb-1">
+                    {assetData.assetType} · #{searchId?.toString()}
+                  </div>
+                  <h2 className="text-xl font-semibold text-gray-900 tracking-card-title">
+                    {assetData.name}
+                  </h2>
+                  <p className="text-sm text-gray-600">{assetData.brand}</p>
+                </div>
+                {isVerified ? (
+                  <span className="animate-verified px-2.5 py-1 rounded-full bg-green-50 border border-green-200 text-green-700 text-xs font-medium whitespace-nowrap">
+                    Verified
+                  </span>
+                ) : (
+                  <span className="px-2.5 py-1 rounded-full bg-amber-50 border border-amber-200 text-amber-700 text-xs font-medium whitespace-nowrap">
+                    Awaiting verifier
+                  </span>
+                )}
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-black/[0.06]">
+                <div>
+                  <div className="text-xs uppercase tracking-label text-gray-400 mb-1">
+                    Bounty
                   </div>
                   <div className="text-sm font-mono text-gray-900">
-                    {safeFormatEther(stakedAmount)} MON
+                    {safeFormatEther(bountyAmount)} MON
                   </div>
                 </div>
-              )}
+                <div>
+                  <div className="text-xs uppercase tracking-label text-gray-400 mb-1">
+                    Original Owner
+                  </div>
+                  <div className="text-sm font-mono text-gray-900">
+                    {shorten(assetData.originalOwner)}
+                  </div>
+                </div>
+                {isVerified && (
+                  <div>
+                    <div className="text-xs uppercase tracking-label text-gray-400 mb-1">
+                      Verifier Stake
+                    </div>
+                    <div className="text-sm font-mono text-gray-900">
+                      {safeFormatEther(stakedAmount)} MON
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
+          </RevealOnScroll>
 
           {!isVerified && (
-            <div className="bg-white rounded-xl border border-gray-200 p-6">
-              <h3 className="text-base font-semibold text-gray-900 mb-1">
-                Stake &amp; Verify
-              </h3>
-              <p className="text-sm text-gray-600 mb-5 leading-relaxed">
-                Higher stakes signal stronger conviction. Honest verifications
-                earn the bounty. Fraudulent ones lose the entire stake.
-              </p>
+            <RevealOnScroll delay={0.05}>
+              <div className="card-soft p-6">
+                <h3 className="text-base font-semibold text-gray-900 mb-1 tracking-card-title">
+                  Stake &amp; Verify
+                </h3>
+                <p className="text-sm text-gray-600 mb-5 leading-relaxed">
+                  Higher stakes signal stronger conviction. Honest verifications
+                  earn the bounty. Fraudulent ones lose the entire stake.
+                </p>
 
-              <label className="text-xs uppercase tracking-wide text-gray-400 mb-2 block">
-                Your Stake (MON)
-              </label>
-              <input
-                type="number"
-                value={stake}
-                onChange={(e) => setStake(e.target.value)}
-                placeholder="e.g. 2"
-                className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm mb-4 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 outline-none bg-white text-gray-900 placeholder:text-gray-400 transition-colors"
-              />
+                <label className="text-xs uppercase tracking-label text-gray-400 mb-2 block">
+                  Your Stake (MON)
+                </label>
+                <input
+                  type="number"
+                  value={stake}
+                  onChange={(e) => setStake(e.target.value)}
+                  placeholder="e.g. 2"
+                  className="input-line w-full px-3 py-2.5 text-sm text-gray-900 mb-4"
+                />
 
-              {actionError && (
-                <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2.5 text-sm text-red-600 mb-4">
-                  {actionError}
-                </div>
-              )}
+                {actionError && (
+                  <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2.5 text-sm text-red-600 mb-4">
+                    {actionError}
+                  </div>
+                )}
 
-              {!isConnected ? (
-                <button
-                  onClick={() => connect({ connector: injected() })}
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-lg px-4 py-2.5 font-medium text-sm transition-colors"
-                >
-                  Connect Wallet to Verify
-                </button>
-              ) : (
-                <button
-                  onClick={handleStakeVerify}
-                  disabled={isPending}
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-lg px-4 py-2.5 font-medium text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                >
-                  {isPending && (
-                    <svg
-                      className="animate-spin w-4 h-4"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                      />
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8v8z"
-                      />
-                    </svg>
-                  )}
-                  {isPending ? "Staking…" : "Stake & Verify"}
-                </button>
-              )}
+                {!isConnected ? (
+                  <button
+                    onClick={() => connect({ connector: injected() })}
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-lg px-4 py-2.5 font-medium text-sm transition-colors"
+                  >
+                    Connect Wallet to Verify
+                  </button>
+                ) : (
+                  <button
+                    onClick={handleStakeVerify}
+                    disabled={isPending}
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-lg px-4 py-2.5 font-medium text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  >
+                    {isPending && <BlueSpinner className="w-4 h-4 text-white" />}
+                    {isPending ? "Staking…" : "Stake & Verify"}
+                  </button>
+                )}
 
-              <p className="text-xs text-gray-500 mt-3 text-center">
-                Your stake is locked until the next ownership transfer.
-              </p>
-            </div>
+                <p className="text-xs text-gray-500 mt-3 text-center">
+                  Your stake is locked until the next ownership transfer.
+                </p>
+              </div>
+            </RevealOnScroll>
           )}
         </div>
       )}

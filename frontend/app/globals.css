@@ -10,11 +10,142 @@
     background-color: #fafafa;
     color: #111827;
     font-family: var(--font-inter), system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 }
 
+/* ---------- Typography ---------- */
+.hero-headline {
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+}
+
+.tracking-card-title {
+  letter-spacing: -0.01em;
+}
+
+.tracking-label {
+  letter-spacing: 0.08em;
+}
+
+/* ---------- Card surfaces ---------- */
+.card-soft {
+  background-color: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 0.75rem;
+  transition:
+    border-color 0.25s ease,
+    box-shadow 0.25s ease,
+    transform 0.25s ease;
+}
+.card-soft:hover {
+  border-color: rgba(37, 99, 235, 0.2);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+}
+
+.card-feature {
+  background-color: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 0.75rem;
+  transition:
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+.card-feature:hover {
+  border-color: rgba(37, 99, 235, 0.2);
+  box-shadow:
+    0 0 0 1px rgba(37, 99, 235, 0.1),
+    0 4px 24px rgba(0, 0, 0, 0.06);
+}
+
+/* ---------- Inputs ---------- */
+.input-line {
+  background-color: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 0.5rem;
+  outline: none;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+.input-line:focus {
+  border-color: #2563eb;
+  box-shadow:
+    inset 2px 0 0 0 #2563eb,
+    0 0 0 3px rgba(37, 99, 235, 0.08);
+}
+.input-line::placeholder {
+  color: #9ca3af;
+}
+
+/* ---------- Nav link underline (slides in from left) ---------- */
+.link-underline {
+  position: relative;
+  padding-bottom: 2px;
+}
+.link-underline::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background-color: currentColor;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.25s ease;
+}
+.link-underline:hover::after {
+  transform: scaleX(1);
+}
+
+/* ---------- Chip hover scale (asset type selector) ---------- */
+.chip-hover {
+  transition:
+    transform 0.15s ease,
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+}
+.chip-hover:hover {
+  transform: scale(1.03);
+}
+
+/* ---------- SVG checkmark draw-in ---------- */
+@keyframes draw-check {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+.draw-check {
+  stroke-dasharray: 28;
+  stroke-dashoffset: 28;
+  animation: draw-check 0.5s ease-out 0.15s forwards;
+}
+
+/* ---------- Verified badge pulse on mount ---------- */
+@keyframes verified-pulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(5, 150, 105, 0);
+  }
+  40% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 4px rgba(5, 150, 105, 0.15);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(5, 150, 105, 0);
+  }
+}
+.animate-verified {
+  animation: verified-pulse 0.9s ease-out;
+}
+
+/* ---------- Fade in (still used for plain mounts) ---------- */
 @keyframes fade-in {
   from {
     opacity: 0;
@@ -25,7 +156,6 @@
     transform: translateY(0);
   }
 }
-
 .animate-fade-in {
   animation: fade-in 0.35s ease-out;
 }
